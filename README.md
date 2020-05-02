@@ -12,20 +12,24 @@ Report contains the following informations,
 
 # Usage
 
-Step 1: Create an instance 
+Step 1: Create a set of columns to identify the unique row, which is used to find the matching row in second file
+        
+        String[] matchColumns=new String[]{"Name" };//Assume that name is unique in this. Can have composite identity Eg: {"Name","Age"}
+
+Step 2: Create an instance 
 
         ExcelReconciler instance= ReconcilerInstanceFactory.getInstance("xlsx");
         
-Step 2: Parse the file create the documents, creates a lightweighted instance of the excel file
+Step 3: Parse the file create the documents, creates a lightweighted instance of the excel file
 
         Document document1 = instance.parse("/work/sampleexcelfile/Sample1.xlsx");
         Document document2 = instance.parse("/work/sampleexcelfile/Sample2.xlsx");
         
-Step 3: Perform reconcile, generates a result object contains required info to identify the difference
+Step 4: Perform reconcile, generates a result object contains required info to identify the difference
 
         ReconsileResult result = instance.reconcile(document1,document2,matchColumns);
         
-Step 4: Export the result to an excel file
+Step 5: Export the result to an excel file
 
         instance.exportResult(result,"/work/sampleexcelfile/result.xlsx");`
     
