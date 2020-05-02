@@ -45,7 +45,7 @@ Following are the supported command line args,
          -h         Help
          -i <arg>   Comma separated identity columns
          -o <arg>   Output file path
-         -s <arg>   File path of files to be reconciled. Use this option to twice
+         -s <arg>   File path of files to be reconciled. Use this option twice
                     to provide both paths.
 
     
