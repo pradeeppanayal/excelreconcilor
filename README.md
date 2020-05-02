@@ -2,17 +2,17 @@
 This is a utility application developed using apache poi package to reconcile two excel files.
 
 # Purpose
-This can be used to compare two excel files and generates a detailed report contains the required info to identify the diff.
+This can be used to compare two excel files and generates a detailed report contains the required info to easily identify the diff.
 
 # Report
-Report contains the following things
+Report contains the following informations,
 
 * Change action added/modified/removed
 * Value from both the excel for easy compare
 
 # Usage
 
-Step 1: Create the instance 
+Step 1: Create an instance 
 
         ExcelReconciler instance= ReconcilerInstanceFactory.getInstance("xlsx");
         
