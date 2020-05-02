@@ -12,9 +12,9 @@ Report contains the following informations,
 
 # Usage
 
-Step 1: Create a set of columns to identify the unique row, which is used to find the matching row in second file
+Step 1: Create a set of columns to identify the unique row, which is used to find the matching row in second file. You can specify multiple columns, so that it will look for combined identity.
         
-        String[] matchColumns=new String[]{"Name" };//Assume that name is unique in this. Can have composite identity Eg: {"Name","Age"}
+        String[] matchColumns=new String[]{"Name" };
 
 Step 2: Create an instance 
 
@@ -22,8 +22,8 @@ Step 2: Create an instance
         
 Step 3: Parse the file create the documents, creates a lightweighted instance of the excel file
 
-        Document document1 = instance.parse("/work/sampleexcelfile/Sample1.xlsx");
-        Document document2 = instance.parse("/work/sampleexcelfile/Sample2.xlsx");
+        Document document1 = instance.parse("Sample1.xlsx");
+        Document document2 = instance.parse("Sample2.xlsx");
         
 Step 4: Perform reconcile, generates a result object contains required info to identify the difference
 
@@ -31,5 +31,21 @@ Step 4: Perform reconcile, generates a result object contains required info to i
         
 Step 5: Export the result to an excel file
 
-        instance.exportResult(result,"/work/sampleexcelfile/result.xlsx");`
+        instance.exportResult(result,"result.xlsx");
+
+# Command line access
+This  util support command line usage as follows,
+
+        java -jar excel-reconciler.jar -s Sample1.xlsx -s Sample2.xlsx -o result.xlsx -i Name
+
+Following are the supported command line args,
+
+        usage: Excel Reconcilor
+         -c <arg>   Type of the file. supported format [xlsx] (optional)
+         -h         Help
+         -i <arg>   Comma separated identity columns
+         -o <arg>   Output file path
+         -s <arg>   File path of files to be reconciled. Use this option to twice
+                    to provide both paths.
+
     

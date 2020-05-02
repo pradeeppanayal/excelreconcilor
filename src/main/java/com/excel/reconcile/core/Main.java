@@ -60,7 +60,7 @@ public class Main {
     private static Options prepareOptions() {
         // create Options object
         Options options = new Options();
-        options.addOption("s", true, "Space separated file paths of files to be reconciled(2 paths).");
+        options.addOption("s", true, "File path of files to be reconciled. Use this option to twice to provide both paths.");
         options.addOption("o", true, "Output file path");
         options.addOption("i", true, "Comma separated identity columns");
         options.addOption("c", true, "Type of the file. supported format [xlsx] (optional)");
