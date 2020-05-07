@@ -19,7 +19,10 @@ public class XLSXReconcilor extends   AbstractReconciler {
     private static final String S1=" (s1)";
     private static final String S2=" (s2)";
 
-    public Document parse(String filePath) {
+    public Document parse(String filePath, String[] identityColumns) {
+        if(identityColumns==null || identityColumns.length==0)
+            throw new InvalidParameterException("Identity column should be specified");
+
         File file1=new File(filePath);
         Document document =new Document();
         Workbook workbook1;
@@ -44,10 +47,12 @@ public class XLSXReconcilor extends   AbstractReconciler {
                 String column = columns[j];
                 crow.getItems().put(column, getValue(row.getCell(j)));
             }
-            document.getRecords().add(crow);
+
+            document.getRecords().put(super.getIdentityAsKey(crow,identityColumns),crow);
         }
         try {
             workbook1.close();
+            workbook1 = null;
         }catch (Exception ex){
             //TODO nothing
         }
@@ -68,8 +73,8 @@ public class XLSXReconcilor extends   AbstractReconciler {
                 throw new InvalidParameterException("Could not remove the target file.");
         //op.createNewFile();
 
-        Workbook workbook1 = null;
-        OutputStream os = null;
+        Workbook workbook1;
+        OutputStream os;
         try {
             workbook1 = new XSSFWorkbook();
             os = new FileOutputStream(op);
@@ -85,6 +90,7 @@ public class XLSXReconcilor extends   AbstractReconciler {
         try{
             if(os!=null) os.close();
             if(workbook1!=null) workbook1.close();
+            workbook1=null;
         }catch (Exception ex){}
 
     }
@@ -185,9 +191,6 @@ public class XLSXReconcilor extends   AbstractReconciler {
         if(cell.getCellType() == CellType.STRING)
         return cell.getStringCellValue();
         return  "";
-
-
-
     }
 
 }

@@ -1,11 +1,11 @@
 package com.excel.reconcile.core;
 
 import com.excel.beans.*;
-import com.excel.comparators.RowComparator;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.security.InvalidParameterException;
+import java.util.*;
+
+import static java.util.Collections.*;
 
 /**
  * @author Pradeep CH
@@ -14,46 +14,35 @@ import java.util.Set;
 public abstract class AbstractReconciler implements  ExcelReconciler{
 
     public ReconsileResult reconcile(Document document1, Document document2, String[] identityColumns) {
-        Comparator<Record> rowComparator = new RowComparator(identityColumns);
         final ReconsileResult result=new ReconsileResult();
 
 
-        Set<String> identityColumnSet = new HashSet<String>();
-        for (String str:identityColumns  )
-            identityColumnSet.add(str);
+        final Set<String> identityColumnSet = new HashSet<>();
+        addAll(identityColumnSet, identityColumns);
 
         result.setIdentityColumnNames(identityColumnSet);
 
-        for (String str: document1.getColumns())
-            result.getColumns().add(str);
-        for (String str: document2.getColumns())
-            result.getColumns().add(str);
-        for(Record record1 : document1.getRecords()){
-            boolean hasmatch= false;
-            for(Record record2 : document2.getRecords()){
-                if(record2.isReconciled())
-                    continue;
-                if(rowComparator.compare(record1, record2)==0){
-                    record1.setReconciled(true);
-                    record2.setReconciled(true);
-                    ResultEntry entry =  findMismatchIfAny(record1, record2,identityColumnSet,result.getColumns());
-                    if(entry.hasMismatch()){
-                        entry.setMode("Modified");
-                        result.getResultRow().add(entry);
-                        entry.getItems().stream().forEach(o-> result.getUpdatedColumnNames().add(o.getName()));
-                    }
-                    hasmatch=true;
-                    break;
-                }
+        //find all columns
+        addAll(result.getColumns(),document1.getColumns());
+        addAll(result.getColumns(),document2.getColumns());
+
+        for(Map.Entry<String, Record> record1 : document1.getRecords().entrySet()){
+            Record matchingRec = document2.getRecords().get(record1.getKey());
+            if(matchingRec==null){
+                result.getResultRow().add( fillMissingEntry(record1.getValue(),"Removed",identityColumns));
+                continue;
             }
-            //entries which is missing in second file
-            if(!hasmatch){
-                result.getResultRow().add( fillMissingEntry(record1,"Removed",identityColumns));
+            matchingRec.setReconciled(true);
+            ResultEntry entry =  findMismatchIfAny(record1.getValue(), matchingRec,identityColumnSet,result.getColumns());
+            if(entry.hasMismatch()){
+                entry.setMode("Modified");
+                result.getResultRow().add(entry);
+                entry.getItems().stream().forEach(o-> result.getUpdatedColumnNames().add(o.getName()));
             }
         }
 
         //add entries which is added to the second
-        for(Record record2 : document2.getRecords()){
+        for(Record record2 : document2.getRecords().values()){
             if(!record2.isReconciled())
                 result.getResultRow().add( fillMissingEntry(record2,"Added",identityColumns));
         }
@@ -84,5 +73,16 @@ public abstract class AbstractReconciler implements  ExcelReconciler{
                 entry.getItems().add(new ReconsiledItem(str,v1,v2));
         }
         return entry;
+    }
+
+    @Override
+    public String getIdentityAsKey(Record rec, String[] identityColumns) {
+        String str= "";
+        for(String columnName: identityColumns){
+            if(!rec.getItems().containsKey(columnName))
+                throw new InvalidParameterException("Identity column could not found");
+            str = str + rec.getItems().get(columnName);
+        }
+        return str;
     }
 }

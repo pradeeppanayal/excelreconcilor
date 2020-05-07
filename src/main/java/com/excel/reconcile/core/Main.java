@@ -3,6 +3,7 @@ package com.excel.reconcile.core;
 import com.excel.beans.Document;
 import com.excel.beans.ReconsileResult;
 import org.apache.commons.cli.*;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
@@ -13,6 +14,8 @@ import java.security.InvalidParameterException;
  */
 
 public class Main {
+    private static final Logger LOGGER = Logger.getLogger(Main.class);
+
     public static void main(String[] args) throws IOException, ParseException {
 
         Options options = prepareOptions();
@@ -46,12 +49,17 @@ public class Main {
 
         //instance.reconcile(f1,f2,new String[]{"Segment",	"Country",	 "Product" });
         String[] matchColumns=cmd.getOptionValue('i').split(",");
-
+        LOGGER.info("Processing started with param [Source 1: "+path1+", Source 2:"+path2+", O/p Path :"+outputPath+", Identity : "+cmd.getOptionValue('i')+"]");
         ExcelReconciler instance= ReconcilerInstanceFactory.getInstance(instanceIdentifier);
-        Document document1 = instance.parse(path1);
-        Document document2 = instance.parse(path2);
+        Document document1 = instance.parse(path1,matchColumns);
+        LOGGER.info("Parsed file 1 with row count :"+document1.getRecords().size());
+        Document document2 = instance.parse(path2,matchColumns);
+        LOGGER.info("Parsed file 1 with row count :"+document2.getRecords().size());
         ReconsileResult result = instance.reconcile(document1,document2,matchColumns);
+        LOGGER.info("Reconciling completed. Mismatches rows :"+result.getResultRow().size());
+        LOGGER.info("Persisting ..");
         instance.exportResult(result,outputPath);
+        LOGGER.info("Output file saved to location :" + outputPath);
 
         //System.out.println(result);
 
