@@ -50,17 +50,17 @@ public class Main {
 
         //instance.reconcile(f1,f2,new String[]{"Segment",	"Country",	 "Product" });
         String[] matchColumns=cmd.getOptionValue('i').split(",");
-        LOGGER.info("Processing started with param [Source 1: "+path1+", Source 2:"+path2+", O/p Path :"+outputPath+", Identity : "+cmd.getOptionValue('i')+"]");
+        System.out.println("Processing started with param [Source 1: "+path1+", Source 2:"+path2+", O/p Path :"+outputPath+", Identity : "+cmd.getOptionValue('i')+"]");
         ExcelReconciler instance= ReconcilerInstanceFactory.getInstance(instanceIdentifier);
         Document document1 = instance.parse(path1,matchColumns);
-        LOGGER.info("Parsed file 1 with row count :"+document1.getRecords().size());
+        System.out.println("Parsed file 1 with row count :"+document1.getRecords().size());
         Document document2 = instance.parse(path2,matchColumns);
-        LOGGER.info("Parsed file 1 with row count :"+document2.getRecords().size());
+        System.out.println("Parsed file 1 with row count :"+document2.getRecords().size());
         ReconsileResult result = instance.reconcile(document1,document2,matchColumns);
-        LOGGER.info("Reconciling completed. Mismatches rows :"+result.getResultRow().size());
-        LOGGER.info("Persisting ..");
+        System.out.println("Reconciling completed. Mismatches rows :"+result.getResultRow().size());
+        System.out.println("Persisting ..");
         instance.exportResult(result,outputPath);
-        LOGGER.info("Output file saved to location :" + outputPath);
+        System.out.println("Output file saved to location :" + outputPath);
 
         //System.out.println(result);
 
